@@ -26,7 +26,7 @@ import {
 } from 'lucide-react';
 
 // Static data for API endpoints - in a real app, this would connect to a real backend
-const API_ENDPOINT = '/api/assistant';
+const API_ENDPOINT = 'http://127.0.0.1:5137/api/assistant';
 
 interface Message {
   id: string;
@@ -116,7 +116,7 @@ const AssistantPage: React.FC = () => {
     return Date.now().toString(36) + Math.random().toString(36).substring(2);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!inputValue.trim()) return;
     
@@ -132,17 +132,54 @@ const AssistantPage: React.FC = () => {
     setIsLoading(true);
     
     // Simulate API call with static response
-    setTimeout(() => {
+    // setTimeout(() => {
+    //   const assistantMessage: Message = {
+    //     id: generateUniqueId(),
+    //     content: simulateResponse(inputValue),
+    //     role: 'assistant',
+    //     timestamp: new Date()
+    //   };
+      
+    //   setMessages(prev => [...prev, assistantMessage]);
+    //   setIsLoading(false);
+    // }, 1500);
+    try {
+      const response = await fetch(API_ENDPOINT, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ prompt: inputValue })
+      });
+  
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+  
+      const data = await response.json();
+  
       const assistantMessage: Message = {
         id: generateUniqueId(),
-        content: simulateResponse(inputValue),
+        content: data.response, // make sure your backend returns { response: "..." }
         role: 'assistant',
         timestamp: new Date()
       };
-      
+  
       setMessages(prev => [...prev, assistantMessage]);
+    } catch (error) {
+      console.error('Error fetching response:', error);
+  
+      const errorMessage: Message = {
+        id: generateUniqueId(),
+        content: "Sorry, I couldn't get a response. Please try again later.",
+        role: 'assistant',
+        timestamp: new Date()
+      };
+  
+      setMessages(prev => [...prev, errorMessage]);
+    } finally {
       setIsLoading(false);
-    }, 1500);
+    }
   };
 
   const handlePromptSelect = (prompt: string) => {
