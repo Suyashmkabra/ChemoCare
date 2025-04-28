@@ -54,7 +54,7 @@ function App() {
         <Route path="/games" element={<GamesPage />} />
         <Route path="/mind-soothing" element={<MindSoothingPage />} />
         <Route path="/assistant" element={<AssistantPage />} />
-        <Route path="/assistantt" element={<AssistantPageT />} />
+        <Route path="/assistanttrial" element={<AssistantPageT />} />
         <Route path="/community" element={<CommunityPage />} />
         <Route path="/faqs" element={<FAQsPage />} />
         <Route path="/mind-soothing/breathing" element={<BreathingExercise />} />

@@ -2,6 +2,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { activityRoutes } from "../utils/activityRoutes"; 
+import { FlaskConical, Calendar, Heart, Lightbulb, Mic, MicOff } from 'lucide-react'; // Make sure you have icons
+
 
 import { 
   ArrowLeft, 
@@ -10,10 +12,6 @@ import {
   Brain, 
   Bot, 
   User, 
-  Lightbulb, 
-  FlaskConical, 
-  Calendar, 
-  Heart, 
   Trash2,
   Clock, 
   Settings, 
@@ -65,6 +63,8 @@ const AssistantPageT: React.FC = () => {
   ]);
   const [isLoading, setIsLoading] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [isListening, setIsListening] = useState(false);
+  const recognitionRef = useRef<SpeechRecognition | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [conversations, setConversations] = useState<Conversation[]>([
     {
@@ -112,6 +112,33 @@ const AssistantPageT: React.FC = () => {
   ];
 
   // Scroll to bottom when messages change
+  useEffect(() => {
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (SpeechRecognition) {
+      const recognition = new SpeechRecognition();
+      recognition.lang = 'en-US';
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
+
+      recognition.onresult = (event: SpeechRecognitionEvent) => {
+        const transcript = event.results[0][0].transcript;
+        console.log('Recognized text:', transcript);
+        setInputValue(transcript); // Fill input box with spoken words
+      };
+
+      recognition.onerror = (event) => {
+        console.error('Speech recognition error:', event.error);
+        setIsListening(false);
+      };
+
+      recognition.onend = () => {
+        setIsListening(false);
+      };
+
+      recognitionRef.current = recognition;
+    }
+  }, []);
+
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
@@ -185,6 +212,16 @@ const AssistantPageT: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleListen = () => {
+    if (!recognitionRef.current) return;
+    if (isListening) {
+      recognitionRef.current.stop();
+    } else {
+      recognitionRef.current.start();
+    }
+    setIsListening(!isListening);
   };
 
   const handlePromptSelect = (prompt: string) => {
@@ -470,20 +507,32 @@ const AssistantPageT: React.FC = () => {
             
             {/* Input Form */}
             <form onSubmit={handleSubmit} className="relative">
-              <input
-                type="text"
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                placeholder="Message Chemo Buddy..."
-                className="w-full border border-gray-300 rounded-xl pl-4 pr-10 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-              />
-              <button
-                type="submit"
-                disabled={!inputValue.trim() || isLoading}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <Send className="h-5 w-5" />
-              </button>
+              <div className="relative w-full">
+                <input
+                  type="text"
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
+                  placeholder="Message Chemo Buddy..."
+                  className="w-full border border-gray-300 rounded-xl pl-12 pr-16 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                />
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault(); // <-- important to prevent form submitting accidentally
+                    handleListen();
+                  }}
+                  className="absolute left-3 top-1/2 transform -translate-y-1/2 p-1 rounded-full bg-gray-100 hover:bg-gray-200 transition"
+                >
+                  {isListening ? <MicOff className="text-red-500 h-5 w-5" /> : <Mic className="text-green-500 h-5 w-5" />}
+                </button>
+                <button
+                  type="submit"
+                  disabled={!inputValue.trim() || isLoading}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <Send className="h-5 w-5" />
+                </button>
+              </div>
             </form>
             
             <p className="text-xs text-gray-400 mt-2 text-center">

@@ -3,8 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { 
   ArrowLeft, 
   Send, 
-  Sparkles, 
-  Brain, 
   Bot, 
   User, 
   Lightbulb, 
@@ -12,21 +10,14 @@ import {
   Calendar, 
   Heart, 
   Trash2,
-  Clock, 
-  Settings, 
-  X,
-  RefreshCw,
-  Maximize,
-  Minimize,
   Menu,
   Plus,
   ChevronLeft,
   MessageSquare,
-  MoreVertical
 } from 'lucide-react';
 
 // Static data for API endpoints - in a real app, this would connect to a real backend
-const API_ENDPOINT = 'http://127.0.0.1:5137/api/assistant';
+const API_ENDPOINT = 'http://127.0.0.1:513//api/assistant';
 
 interface Message {
   id: string;
