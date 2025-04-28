@@ -31,6 +31,9 @@ import CloudWatching from './pages/activities/CloudWatching';
 import AssistantPage from './pages/AssistantPage';
 import CommunityPage from './pages/CommunityPage';
 import FAQsPage from './pages/FAQsPage';
+import SymptomTrackerPage from './pages/SymptomTrackerPage';
+import RemindersPage from './pages/RemindersPage';
+import ResourceLibraryPage from './pages/ResourceLibraryPage';
 import AssistantPageT from './pages/AssitantPageT';
 
 // ScrollToTop component to handle scrolling to top on navigation
@@ -57,6 +60,9 @@ function App() {
         <Route path="/assistanttrial" element={<AssistantPageT />} />
         <Route path="/community" element={<CommunityPage />} />
         <Route path="/faqs" element={<FAQsPage />} />
+        <Route path="/symptom-tracker" element={<SymptomTrackerPage />} />
+        <Route path="/reminders" element={<RemindersPage />} />
+        <Route path="/resource-library" element={<ResourceLibraryPage />} />
         <Route path="/mind-soothing/breathing" element={<BreathingExercise />} />
         <Route path="/mind-soothing/progressive-relaxation" element={<ProgressiveRelaxation />} />
         <Route path="/mind-soothing/warm-bath" element={<WarmBath />} />
